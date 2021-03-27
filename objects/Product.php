@@ -44,24 +44,47 @@ class Product
     }
 
     //create new Product
-    public function createProduct()
+    public function createProduct($name, $description, $model, $price)
     {
-        $query = "Insert INTO '.$this->table.' SET Name=:name_IN, Description=:description_IN, Model=:model_IN, Price=:price_IN";
-        $stmt = $this->conn->prepare($query);
+        if (!empty($name) && !empty($description) && !empty($model) && !empty($price)) {
+            $query = "SELECT * FROM $this->table WHERE Name=:name_IN";
+            $stmt = $this->conn->prepare($query);
+            $this->Name = $name;
+            $stmt->bindParam(':name_IN', $this->Name);
 
-        //security functions
-        $this->Name = htmlspecialchars(strip_tags($this->Name));
-        $this->Description = htmlspecialchars(strip_tags($this->Description));
-        $this->Model = htmlspecialchars(strip_tags($this->Model));
-        $this->Price = htmlspecialchars(strip_tags($this->Price));
-        $stmt->bindParam(':name_IN', $this->Name);
-        $stmt->bindParam(':description_IN', $this->Description);
-        $stmt->bindParam(':model_IN', $this->Model);
-        $stmt->bindParam(':price_IN', $this->Price);
-        if ($stmt->execute()) {
-            return true;
+            $stmt->execute();
+            if (!($stmt->execute())) {
+                echo "The query could not be executed";
+                die();
+            }
+
+            $count = $stmt->rowCount();
+            if ($count > 0) {
+                echo "The product already exist";
+                die();
+            }
+
+            $query = "Insert INTO $this->table SET Name=:name_IN, Description=:description_IN, Model=:model_IN, Price=:price_IN";
+            $stmt = $this->conn->prepare($query);
+
+            //security functions
+            $this->Name = htmlspecialchars(strip_tags($name));
+            $this->Description = htmlspecialchars(strip_tags($description));
+            $this->Model = htmlspecialchars(strip_tags($model));
+            $this->Price = htmlspecialchars(strip_tags($price));
+            $stmt->bindParam(':name_IN', $this->Name);
+            $stmt->bindParam(':description_IN', $this->Description);
+            $stmt->bindParam(':model_IN',  $this->Model);
+            $stmt->bindParam(':price_IN', $this->Price);
+            if (!$stmt->execute()) {
+                echo "Product not created";
+            }
+
+            echo "Name: $this->Name Description:$this->Description Model:$this->Model Price:$this->Price";
+        } else {
+
+            echo "All arguments needs value";
+            die();
         }
-        printf("Error:%s.\n", $stmt->error);
-        return false;
     }
 }
