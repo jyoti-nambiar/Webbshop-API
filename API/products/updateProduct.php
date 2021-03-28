@@ -8,6 +8,16 @@ $db = $database->connect();
 
 //call product object
 $product = new Product($db);
+if (!empty($_GET['id'])) {
+
+    $product->Id = $_GET['id'];
+} else {
+    $error = new stdClass();
+    $error->message = "product id is not selected";
+    $error->code = "002";
+    print_r(json_encode($error));
+}
+
 
 if (!empty($_GET['name'])) {
 
@@ -43,9 +53,9 @@ if (!empty($_GET['price'])) {
 } else {
     $error = new stdClass();
     $error->message = "product price is not set";
-    $error->code = "006";
+    $error->code = "007";
     print_r(json_encode($error));
     die();
 }
 
-$product->createProduct();
+$product->updateProduct();

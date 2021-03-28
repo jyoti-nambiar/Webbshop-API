@@ -9,15 +9,23 @@ $db = $database->connect();
 //call product object
 $product = new Product($db);
 
-$product->Id = isset($_GET['Id']) ? $_GET['Id'] : die();
-$product->singleProduct();
-$product_array = array(
-    'Id' => $product->Id,
-    'name' => $product->Name,
-    'description' => $product->Description,
-    'model' => $product->Model,
-    'price' => $product->Price
 
-);
 
-print_r(json_encode($product_array));
+if (isset($_GET['id'])) {
+    $product->Id = $_GET['id'];
+    $product->singleProduct();
+    $product_array = array(
+        'Id' => $product->Id,
+        'name' => $product->Name,
+        'description' => $product->Description,
+        'model' => $product->Model,
+        'price' => $product->Price
+
+    );
+    print_r(json_encode($product_array));
+} else {
+    $error = new stdClass();
+    $error->message = "The product id is not set";
+    $error->code = "002";
+    print_r(json_encode($error));
+}
