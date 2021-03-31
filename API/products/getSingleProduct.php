@@ -25,7 +25,7 @@ if (isset($_GET['id'])) {
     print_r(json_encode($product_array));
 } else {
     $error = new stdClass();
-    $error->message = "The product id is not set";
+    $error->message = "The product id is not specified";
     $error->code = "002";
     print_r(json_encode($error));
 }

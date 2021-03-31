@@ -13,7 +13,7 @@ if (!empty($_GET['id'])) {
     $product->Id = $_GET['id'];
 } else {
     $error = new stdClass();
-    $error->message = "product id is not selected";
+    $error->message = "product id is not specified";
     $error->code = "002";
     print_r(json_encode($error));
 }
@@ -24,7 +24,7 @@ if (!empty($_GET['name'])) {
     $product->Name = $_GET['name'];
 } else {
     $error = new stdClass();
-    $error->message = "product name is not set";
+    $error->message = "product name is not specified";
     $error->code = "004";
     print_r(json_encode($error));
 }
@@ -33,7 +33,7 @@ if (!empty($_GET['description'])) {
     $product->Description = $_GET['description'];
 } else {
     $error = new stdClass();
-    $error->message = "product description is not set";
+    $error->message = "product description is not specified";
     $error->code = "005";
     print_r(json_encode($error));
 }
@@ -42,7 +42,7 @@ if (!empty($_GET['model'])) {
     $product->Model = $_GET['model'];
 } else {
     $error = new stdClass();
-    $error->message = "product model is not set";
+    $error->message = "product model is not specified";
     $error->code = "006";
     print_r(json_encode($error));
 }
@@ -52,7 +52,7 @@ if (!empty($_GET['price'])) {
     $product->Price = $_GET['price'];
 } else {
     $error = new stdClass();
-    $error->message = "product price is not set";
+    $error->message = "product price is not specified";
     $error->code = "007";
     print_r(json_encode($error));
     die();
