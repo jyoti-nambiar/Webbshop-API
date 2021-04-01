@@ -115,8 +115,6 @@ class User
         $stmt->bindParam(':userid_IN', $this->Id);
         $stmt->bindParam(':activeTime_IN', $activeTime);
         $stmt->execute();
-        $tme = time();
-        echo $tme . "<br>";
         $return = $stmt->fetch();
         if (isset($return['Token'])) {
 
@@ -125,10 +123,10 @@ class User
             return false;
         }
     }
-    /*
+
     function isTokenValid($token)
     {
-        $query = "SELECT Token, Last_used FROM sessions WHERE Token=:token_IN, Last_used> :activeTime_IN LIMIT 1";
+        $query = "SELECT Token, Last_used FROM sessions WHERE Token=:token_IN AND Last_used > :activeTime_IN LIMIT 1";
         $activeTime = time() - (60 * 60);
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':token_IN', $token);
@@ -137,7 +135,7 @@ class User
         $return = $stmt->fetch();
         if (isset($return['Token'])) {
 
-            $this->UpdateToken($return['token']);
+            $this->UpdateToken($return['Token']);
             return true;
         } else {
 
@@ -147,10 +145,10 @@ class User
     function UpdateToken($token)
     {
         $sql = "UPDATE sessions SET Last_used=:last_used_IN WHERE Token=:token_IN";
-        $statement = $this->database_connection->prepare($sql);
+        $statement = $this->conn->prepare($sql);
         $time = time();
         $statement->bindParam(":last_used_IN", $time);
         $statement->bindParam(":token_IN", $token);
         $statement->execute();
-    }*/
+    }
 }
