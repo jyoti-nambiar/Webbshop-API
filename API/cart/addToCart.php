@@ -1,7 +1,7 @@
 <?php
 include('../../config/Database_conn.php');
 include('../../objects/Cart.php');
-
+include('../../objects/User.php');
 //call database object
 $database = new Database();
 $db = $database->connect();
@@ -26,5 +26,29 @@ if (!empty($_GET['quantity'])) {
     $error->message = "product quantity is not specified";
     $error->code = "005";
     print_r(json_encode($error));
+    die();
 }
-$cart->ProductInCart();
+$user = new User($db);
+
+$query = "SELECT User_Id, Token FROM sessions WHERE Id=(SELECT MAX(id) FROM sessions)";
+$stmt = $db->prepare($query);
+if ($stmt->execute()) {
+    $row = $stmt->fetch();
+    //print_r($row);
+    //getting orderId and UserId from sessions table
+    $cart->OrderId = $row['Token'];
+    // echo $cart->OrderId;
+    $cart->UserId = $row['User_Id'];
+
+
+    if ($user->isTokenValid($cart->OrderId)) {
+
+        $cart->ProductInCart();
+    } else {
+        $error = new stdClass();
+        $error->message = "Invalid OrderId, please login again";
+        $error->code = "0010";
+        print_r(json_encode($error));
+        die();
+    }
+}

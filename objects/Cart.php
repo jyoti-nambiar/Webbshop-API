@@ -4,7 +4,7 @@ class Cart
 
     //DB param
     private $conn;
-    private $table = 'orderitems';
+    private $table = 'pendingOrders';
 
     //cart properties
     public $Id;
@@ -27,9 +27,10 @@ class Cart
         $stmt = $this->conn->prepare($query);
         if ($stmt->execute()) {
             $row = $stmt->fetch();
+            //print_r($row);
             //getting orderId and UserId from sessions table
             $this->OrderId = $row['Token'];
-            echo $this->OrderId;
+            //echo $this->OrderId;
             $this->UserId = $row['User_Id'];
 
             $query = "SELECT * FROM $this->table WHERE ProductId=:productid_IN AND  UserId=:userid_IN AND OrderId=:orderid_IN";
@@ -39,31 +40,31 @@ class Cart
             $stmt->bindParam(':userid_IN', $this->UserId);
             $stmt->execute();
             $count = $stmt->rowCount();
-            echo "count" . $count;
+            //echo "count" . $count;
             if ($count > 0) {
                 $row = $stmt->fetch();
-                $this->Id = $row['orderItemId'];
-                $query = "Update $this->table SET Quantity= Quantity + 1 WHERE orderItemId= :id_IN";
+                $this->Id = $row['Id'];
+                $query = "Update $this->table SET Quantity= Quantity + 1 WHERE Id= :id_IN";
                 $stmt = $this->conn->prepare($query);
                 $stmt->bindParam(':id_IN', $this->Id);
                 $stmt->execute();
+            } else {
+
+
+                $query = "Insert INTO $this->table SET OrderId=:orderid_IN,  ProductId=:productid_IN, Quantity=:quantity_IN, UserId=:userid_IN";
+                $stmt = $this->conn->prepare($query);
+
+                // print_r($row);
+                //bind functions
+                $stmt->bindParam(':orderid_IN', $this->OrderId);
+                $stmt->bindParam(':productid_IN', $this->ProductId);
+                $stmt->bindParam(':quantity_IN',  $this->Quantity);
+                $stmt->bindParam(':userid_IN', $this->UserId);
+                if (!$stmt->execute()) {
+                    echo "Order not created";
+                }
+                echo "Order No: $this->OrderId ProductId:$this->ProductId Quantity $this->Quantity User Id $this->UserId";
             }
-
-
-
-            $query = "Insert INTO $this->table SET OrderId=:orderid_IN,  ProductId=:productid_IN, Quantity=:quantity_IN, UserId=:userid_IN";
-            $stmt = $this->conn->prepare($query);
-
-
-            //bind functions
-            $stmt->bindParam(':orderid_IN', $this->OrderId);
-            $stmt->bindParam(':productid_IN', $this->ProductId);
-            $stmt->bindParam(':quantity_IN',  $this->Quantity);
-            $stmt->bindParam(':userid_IN', $this->UserId);
-            if (!$stmt->execute()) {
-                echo "Order not created";
-            }
-            echo "Order No: $this->OrderId ProductId:$this->ProductId Quantity $this->Quantity User Id $this->UserId";
         }
     }
 }
