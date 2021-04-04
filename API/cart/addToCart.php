@@ -32,8 +32,13 @@ $user = new User($db);
 
 $query = "SELECT User_Id, Token FROM sessions WHERE Id=(SELECT MAX(id) FROM sessions)";
 $stmt = $db->prepare($query);
+if (!$stmt->execute()) {
+    echo "Please login first";
+}
+
 if ($stmt->execute()) {
     $row = $stmt->fetch();
+
     //print_r($row);
     //getting orderId and UserId from sessions table
     $cart->OrderId = $row['Token'];
