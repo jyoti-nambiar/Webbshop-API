@@ -91,52 +91,45 @@ class Cart
 
     function checkoutOrder()
     {
-        if (!isset($this->OrderId)) {
-            $query = "SELECT po.OrderId, u.Username, SUM(po.Quantity) AS Quantity, SUM(p.Price) AS TotalPrice FROM pendingorders AS po JOIN products AS p ON po.ProductId = p.Id JOIN users AS u ON po.UserId = u.Id WHERE po.OrderId='$this->OrderId'";
+
+        $query = "SELECT po.OrderId, u.Username, SUM(po.Quantity) AS Quantity, SUM(p.Price) AS TotalPrice FROM pendingorders AS po JOIN products AS p ON po.ProductId = p.Id JOIN users AS u ON po.UserId = u.Id WHERE po.OrderId='$this->OrderId'";
+        $stmt = $this->conn->prepare($query);
+        //$stmt->bindParam(':orderid_IN', $this->OrderId);
+        if (!$stmt->execute()) {
+            $error = new stdClass();
+            $error->message = "Orderid does not exist";
+            $error->code = "0011";
+            print_r(json_encode($error));
+            die();
+        } else {
+
+            $row = $stmt->fetch();
+            //print_r($row);
+            $user = $row['Username'];
+            $count = $row['Quantity'];
+            $total = $row['TotalPrice'];
+            $this->OrderId = $row['OrderId'];
+
+            $query = "INSERT INTO checkoutorders SET OrderId=:orderid_IN, Username=:username_IN, NumberOfProducts=:numofproducts_IN, TotalAmount=:total_IN";
             $stmt = $this->conn->prepare($query);
-            //$stmt->bindParam(':orderid_IN', $this->OrderId);
+            $stmt->bindParam(':orderid_IN', $this->OrderId);
+            $stmt->bindParam(':username_IN', $user);
+            $stmt->bindParam(':numofproducts_IN', $count);
+            $stmt->bindParam(':total_IN', $total);
             if (!$stmt->execute()) {
                 $error = new stdClass();
-                $error->message = "Orderid does not exist";
-                $error->code = "0011";
+                $error->message = "Order could not be checked-out";
+                $error->code = "0012";
                 print_r(json_encode($error));
                 die();
             } else {
-
-                $row = $stmt->fetch();
-                print_r($row);
-                $user = $row['Username'];
-                $count = $row['Quantity'];
-                $total = $row['TotalPrice'];
-                $this->OrderId = $row['OrderId'];
-
-                $query = "INSERT INTO checkoutorders SET OrderId=:orderid_IN, Username=:username_IN, NumberOfProducts=:numofproducts_IN, TotalAmount=:total_IN";
+                $query = "DELETE FROM $this->table WHERE OrderId=:orderid_IN";
                 $stmt = $this->conn->prepare($query);
                 $stmt->bindParam(':orderid_IN', $this->OrderId);
-                $stmt->bindParam(':username_IN', $user);
-                $stmt->bindParam(':numofproducts_IN', $count);
-                $stmt->bindParam(':total_IN', $total);
-                if (!$stmt->execute()) {
-                    $error = new stdClass();
-                    $error->message = "Order could not be checked-out";
-                    $error->code = "0012";
-                    print_r(json_encode($error));
-                    die();
-                } else {
-                    $query = "DELETE FROM $this->table WHERE OrderId=:orderid_IN";
-                    $stmt = $this->conn->prepare($query);
-                    $stmt->bindParam(':orderid_IN', $this->OrderId);
-                    $stmt->execute();
-                }
+                $stmt->execute();
             }
-
-            echo "Order No.$this->OrderId. is successfully checked out";
-        } else {
-            $error = new stdClass();
-            $error->message = "Provide a valid orderId to checkout";
-            $error->code = "0013";
-            print_r(json_encode($error));
-            die();
         }
+
+        echo "Order No.$this->OrderId. is successfully checked out";
     }
 }

@@ -115,7 +115,7 @@ class Product
         $stmt->execute();
         echo "Name: $this->Name Description:$this->Description Model:$this->Model Price:$this->Price";
     }
-
+    //Delete product
     public function deleteProduct()
     {
         $query = "DELETE FROM $this->table WHERE Id=:id_IN ";
@@ -131,5 +131,23 @@ class Product
 
         $stmt->execute();
         echo "Product deleted";
+    }
+    //product by category
+    public function getByCategory()
+    {
+        //create query
+        $query = "SELECT * FROM $this->table WHERE Model=:model_IN";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':model_IN', $this->Model);
+        if (!($stmt->execute()) || $stmt->rowCount() < 1) {
+            $error = new stdClass();
+            $error->message = "No product exist in the category provided";
+            $error->code = "0013";
+            print_r(json_encode($error));
+            die();
+        }
+
+        $stmt->execute();
+        return $stmt;
     }
 }
