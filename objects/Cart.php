@@ -21,7 +21,7 @@ class Cart
     }
 
     //Add product to cart
-    public function ProductInCart()
+    public function addProductInCart()
     {
         $query = "SELECT User_Id, Token FROM sessions WHERE Id=(SELECT MAX(id) FROM sessions)";
         $stmt = $this->conn->prepare($query);
@@ -31,12 +31,13 @@ class Cart
 
         if ($stmt->execute()) {
             $row = $stmt->fetch();
-            //print_r($row);
+
             //getting orderId and UserId from sessions table
             $this->OrderId = $row['Token'];
-            //echo $this->OrderId;
+
             $this->UserId = $row['User_Id'];
 
+            //query to see if product exist , if yes only update its quqntity
             $query = "SELECT * FROM $this->table WHERE ProductId=:productid_IN AND  UserId=:userid_IN AND OrderId=:orderid_IN";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':productid_IN', $this->ProductId);
@@ -44,21 +45,18 @@ class Cart
             $stmt->bindParam(':userid_IN', $this->UserId);
             $stmt->execute();
             $count = $stmt->rowCount();
-            //echo "count" . $count;
-            if ($count > 0) {
+            if ($count > 0) { //if product already in cart, update quantity
                 $row = $stmt->fetch();
                 $this->Id = $row['Id'];
-                $query = "Update $this->table SET Quantity= Quantity + 1 WHERE Id= :id_IN";
+                $query = "Update $this->table SET Quantity= GREATEST(Quantity + ($this->Quantity), 0) WHERE Id= :id_IN";
                 $stmt = $this->conn->prepare($query);
                 $stmt->bindParam(':id_IN', $this->Id);
                 $stmt->execute();
+                echo "Product already in cart, quantity updated";
             } else {
-
-
                 $query = "Insert INTO $this->table SET OrderId=:orderid_IN,  ProductId=:productid_IN, Quantity=:quantity_IN, UserId=:userid_IN";
                 $stmt = $this->conn->prepare($query);
 
-                // print_r($row);
                 //bind functions
                 $stmt->bindParam(':orderid_IN', $this->OrderId);
                 $stmt->bindParam(':productid_IN', $this->ProductId);
@@ -78,38 +76,46 @@ class Cart
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':productid_IN', $this->ProductId);
         $stmt->bindParam(':orderid_IN', $this->OrderId);
-        if (!$stmt->execute()) {
+        $stmt->execute();
+        $count = $stmt->rowCount();
+        if ($count > 0) { //if row deleted
+            echo "product deleted from cart";
+        } else { //if the order ID or product ID does not exist
             $error = new stdClass();
-            $error->message = "No product with the id provided exist";
+            $error->message = "No product or order Id exist";
             $error->code = "0003";
             print_r(json_encode($error));
             die();
         }
-
-        echo "Product deleted from cart";
     }
 
     function checkoutOrder()
     {
-
-        $query = "SELECT po.OrderId, u.Username, SUM(po.Quantity) AS Quantity, SUM(p.Price) AS TotalPrice FROM pendingorders AS po JOIN products AS p ON po.ProductId = p.Id JOIN users AS u ON po.UserId = u.Id WHERE po.OrderId='$this->OrderId'";
+        $query = "SELECT po.OrderId, u.Username, SUM(po.Quantity) AS Quantity, SUM(p.Price) AS TotalPrice FROM pendingOrders AS po JOIN products AS p ON po.ProductId = p.Id JOIN users AS u ON po.UserId = u.Id WHERE po.OrderId=:orderid_IN";
         $stmt = $this->conn->prepare($query);
-        //$stmt->bindParam(':orderid_IN', $this->OrderId);
+        $stmt->bindParam(':orderid_IN', $this->OrderId);
         if (!$stmt->execute()) {
             $error = new stdClass();
-            $error->message = "Orderid does not exist";
+            $error->message = "Order id does not exist";
             $error->code = "0011";
             print_r(json_encode($error));
             die();
         } else {
 
             $row = $stmt->fetch();
-            //print_r($row);
             $user = $row['Username'];
             $count = $row['Quantity'];
             $total = $row['TotalPrice'];
-            $this->OrderId = $row['OrderId'];
-
+            if (!empty($row['OrderId'])) {
+                //echo $row['OrderId'];
+                $this->OrderId = $row['OrderId'];
+            } else {
+                $error = new stdClass();
+                $error->message = "OrderId does not exist, so cannot be checked-out";
+                $error->code = "0012";
+                print_r(json_encode($error));
+                die();
+            }
             $query = "INSERT INTO checkoutorders SET OrderId=:orderid_IN, Username=:username_IN, NumberOfProducts=:numofproducts_IN, TotalAmount=:total_IN";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':orderid_IN', $this->OrderId);
@@ -118,7 +124,7 @@ class Cart
             $stmt->bindParam(':total_IN', $total);
             if (!$stmt->execute()) {
                 $error = new stdClass();
-                $error->message = "Order could not be checked-out";
+                $error->message = "OrderId does not exist, so cannot be checked-out";
                 $error->code = "0012";
                 print_r(json_encode($error));
                 die();

@@ -10,12 +10,12 @@ $db = $database->connect();
 $cart = new Cart($db);
 
 
-if (!empty($_GET['productId'])) {
+if (!empty($_GET['productid'])) {
 
-    $cart->ProductId = $_GET['productId'];
+    $cart->ProductId = $_GET['productid'];
 } else {
     $error = new stdClass();
-    $error->message = "product id is not specified";
+    $error->message = "product Id is not specified";
     $error->code = "005";
     print_r(json_encode($error));
 }
@@ -24,7 +24,7 @@ if (!empty($_GET['quantity'])) {
 } else {
     $error = new stdClass();
     $error->message = "product quantity is not specified";
-    $error->code = "005";
+    $error->code = "006";
     print_r(json_encode($error));
     die();
 }
@@ -39,19 +39,19 @@ if (!$stmt->execute()) {
 if ($stmt->execute()) {
     $row = $stmt->fetch();
 
-    //print_r($row);
+
     //getting orderId and UserId from sessions table
     $cart->OrderId = $row['Token'];
-    // echo $cart->OrderId;
+
     $cart->UserId = $row['User_Id'];
 
 
     if ($user->isTokenValid($cart->OrderId)) {
 
-        $cart->ProductInCart();
+        $cart->addProductInCart();
     } else {
         $error = new stdClass();
-        $error->message = "Invalid OrderId, please login again";
+        $error->message = "Session logged out, please login again";
         $error->code = "0010";
         print_r(json_encode($error));
         die();

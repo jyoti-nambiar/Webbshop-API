@@ -13,7 +13,7 @@ if (!empty($_GET['productid'])) {
     $cart->ProductId = $_GET['productid'];
 } else {
     $error = new stdClass();
-    $error->message = "product id is not specified";
+    $error->message = "Product id is not specified";
     $error->code = "005";
     print_r(json_encode($error));
 }
@@ -21,7 +21,7 @@ if (!empty($_GET['orderid'])) {
     $cart->OrderId = $_GET['orderid'];
 } else {
     $error = new stdClass();
-    $error->message = "order Id is not specified";
+    $error->message = "Order Id is not specified";
     $error->code = "0011";
     print_r(json_encode($error));
     die();

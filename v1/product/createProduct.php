@@ -24,7 +24,7 @@ if (!empty($_GET['description'])) {
 } else {
     $error = new stdClass();
     $error->message = "product description is not specified";
-    $error->code = "005";
+    $error->code = "007";
     print_r(json_encode($error));
 }
 if (!empty($_GET['model'])) {
@@ -33,7 +33,7 @@ if (!empty($_GET['model'])) {
 } else {
     $error = new stdClass();
     $error->message = "product model is not specified";
-    $error->code = "006";
+    $error->code = "008";
     print_r(json_encode($error));
 }
 
@@ -43,7 +43,7 @@ if (!empty($_GET['price'])) {
 } else {
     $error = new stdClass();
     $error->message = "product price is not specified";
-    $error->code = "006";
+    $error->code = "009";
     print_r(json_encode($error));
     die();
 }

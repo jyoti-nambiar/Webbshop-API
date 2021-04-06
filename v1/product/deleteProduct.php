@@ -14,7 +14,7 @@ if (!empty($_GET['id'])) {
 } else {
     $error = new stdClass();
     $error->message = "product id is not specified";
-    $error->code = "002";
+    $error->code = "005";
     print_r(json_encode($error));
     die();
 }
