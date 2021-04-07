@@ -33,7 +33,11 @@ class Cart
             $row = $stmt->fetch();
 
             //getting orderId and UserId from sessions table
-            $this->OrderId = $row['Token'];
+            if (!empty($row['Token'])) {
+                $this->OrderId = $row['Token'];
+            } else {
+                echo "Please login to create a new Order";
+            }
 
             $this->UserId = $row['User_Id'];
 
@@ -133,6 +137,10 @@ class Cart
                 $stmt = $this->conn->prepare($query);
                 $stmt->bindParam(':orderid_IN', $this->OrderId);
                 $stmt->execute();
+                $sql = "DELETE FROM sessions WHERE Token =:token_IN";
+                $stm = $this->conn->prepare($sql);
+                $stm->bindParam(':token_IN', $this->OrderId);
+                $stm->execute();
             }
         }
 
