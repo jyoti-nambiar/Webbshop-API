@@ -40,7 +40,7 @@ Fork the project from the Github , use [GitHub](https://github.com/jyoti-nambiar
 Create a new Product(_provide values after the '=' symbol_).
 
 5. https://localhost/WebbshopAPI/v1/product/updateProduct.php?id=&name=&description=&model=&price=
-Update an existing product(_provide values after the '=' symbol_).
+Update an existing product(either one parameter or all)(_provide values after the '=' symbol_).
 
 6. https://localhost/WebbshopAPI/v1/product/deleteProduct.php?id=
 Delete a product(_provide values after the '=' symbol_).
