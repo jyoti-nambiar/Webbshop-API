@@ -1,7 +1,7 @@
 <?php
 class Database
 { //DB param
-    private $host = "localhost:8001";
+    private $host = "localhost";
     private $db_name = "webshopApi";
     private $username = "root";
     private $password = "root";

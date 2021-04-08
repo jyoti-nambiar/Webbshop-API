@@ -78,7 +78,7 @@ class Cart
     //get all items in an order
     function getOrderItems()
     {
-        $query = "SELECT po.OrderId, p.Name, po.Quantity, p.Price FROM pendingorders AS po JOIN products AS p ON po.productId= p.Id WHERE po.orderId=:orderid_IN";
+        $query = "SELECT po.OrderId, p.Name, po.Quantity, p.Price FROM $this->table AS po JOIN products AS p ON po.productId= p.Id WHERE po.orderId=:orderid_IN";
 
         $stmt = $this->conn->prepare($query);
         //bind functions

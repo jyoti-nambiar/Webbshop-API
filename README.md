@@ -1,15 +1,15 @@
 # Mobile Shoppy
-Mobile Shoppy is an API project for e-commerce website.The project uses various endpoints to execute all the fuuctionalities which one can find in a e-commerce website.
+Mobile Shoppy is an API project for e-commerce website.The project uses various endpoints to execute all the fuctionalities which one can find in a e-commerce website.
 
 ## Feautures of Project
 1. Register a new user by providing credentials like username, email & password.
 2. Log-in user by username & password.
 3. Adding a new Product to the shop, with details like Name, description, Model (category) & price included.
 4. Update & Delete a product.
-5. Adding items to cart with product-Id and quantity.
-6. View all items in a cart against a order-Id.
-7. Delete items from cart by providing the Product-Id and Order-Id.
-8. Checkout an order with an Order-Id.
+5. Adding items to cart with _product-Id_ and _quantity_.
+6. View all items in a cart against an _order-Id_.
+7. Delete items from cart by providing the _product-Id_ and _order-Id_.
+8. Checkout an order with an _Order-Id_.
 9. Error coding and display fail messages where required.
 
 ## Technologies
@@ -69,13 +69,13 @@ Checkout an order , by providing an order-id from _pendingorders_ table in the d
 
 
 ## Instructions
-1. Register as a user to add items to cart.
-2. Login , if you are a registered user, with your username & password.
+1. Register as a user to add items to cart.There are three dummy users created in the database(With username & password:admin/admin, user/user, jenny/jenny)(both username and password are same for this dummy users).
+2. Login if you are a registered user, with your username & password.
 3. An admin you can Create/Update/delete a product (in version 1 of this project anybody can Create/update/delete a product).
 4. As a user you can add items to cart, only when logged in.
 5. If the user has been inactive for a period of 1 hour after logging in,The session is timed out , hence he/she needs to login again to add items to cart.
 6. The cart items are saved in the pendingorders table, hence can be checked-out at users convinience.
-7. Checked out items can be seen with total purchase quantity and Total bill amount.
+7. Upon Checking out an order , order deatils can be seen with total purchase quantity and total bill amount.
 
 ## Contributions
 The work in this project is contributed by Jyoti Nambiar[https://github.com/jyoti-nambiar/Webbshop-API]
