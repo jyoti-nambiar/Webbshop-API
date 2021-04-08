@@ -37,6 +37,6 @@ if (isset($_GET['category'])) {
 } else {
     $error = new stdClass();
     $error->message = "The product category is not specified";
-    $error->code = "002";
+    $error->code = "001";
     print_r(json_encode($error));
 }

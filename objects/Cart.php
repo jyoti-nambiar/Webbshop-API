@@ -52,11 +52,12 @@ class Cart
             if ($count > 0) { //if product already in cart, update quantity
                 $row = $stmt->fetch();
                 $this->Id = $row['Id'];
+                $this->ProductId = $row['ProductId'];
                 $query = "Update $this->table SET Quantity= GREATEST(Quantity + ($this->Quantity), 0) WHERE Id= :id_IN";
                 $stmt = $this->conn->prepare($query);
                 $stmt->bindParam(':id_IN', $this->Id);
                 $stmt->execute();
-                echo "Product already in cart, quantity updated";
+                echo "Product Id.$this->ProductId already in cart, quantity updated";
             } else {
                 $query = "Insert INTO $this->table SET OrderId=:orderid_IN,  ProductId=:productid_IN, Quantity=:quantity_IN, UserId=:userid_IN";
                 $stmt = $this->conn->prepare($query);
@@ -73,6 +74,38 @@ class Cart
             }
         }
     }
+
+    //get all items in an order
+    function getOrderItems()
+    {
+        $query = "SELECT po.OrderId, p.Name, po.Quantity, p.Price FROM pendingorders AS po JOIN products AS p ON po.productId= p.Id WHERE po.orderId=:orderid_IN";
+
+        $stmt = $this->conn->prepare($query);
+        //bind functions
+        $stmt->bindParam(':orderid_IN', $this->OrderId);
+        $stmt->execute();
+        $count = $stmt->rowCount();
+        if ($count == 0) {
+            $error = new stdClass();
+            $error->message = "No such order exist";
+            $error->code = "0010";
+            print_r(json_encode($error));
+            die();
+        } else {
+            while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                //print_r($data);
+                echo "<table>";
+                echo "<tr><td>Order ID:</td><td>$data[OrderId]</td></tr>";
+                echo "<tr><td>Product:</td><td>$data[Name]</td></tr>";
+                echo "<tr><td>Quantity</td><td>$data[Quantity]</td></tr>";
+                echo "<tr><td>Price</td><td>$data[Price]</td></tr>";
+                echo "</table>";
+            }
+        }
+    }
+
+
+    //delete item from cart
 
     function deleteCartItem()
     {
@@ -145,5 +178,19 @@ class Cart
         }
 
         echo "Order No.$this->OrderId. is successfully checked out";
+        echo "</br>";
+        echo "<h3>Order Details</h3>";
+        $query = "SELECT * FROM checkoutorders WHERE OrderId=:orderid_IN";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':orderid_IN', $this->OrderId);
+        if ($stmt->execute()) {
+            $row = $stmt->fetch();
+            echo "<table>";
+            echo "<tr><td>Order ID:</td><td>$row[OrderId]</td></tr>";
+            echo "<tr><td>Purchased By:</td><td>$row[Username]</td></tr>";
+            echo "<tr><td>Total Quantity:</td><td>$row[NumberOfProducts]</td></tr>";
+            echo "<tr><td>Total Bill Amount:</td><td>$row[TotalAmount]</td></tr>";
+            echo "</table>";
+        }
     }
 }

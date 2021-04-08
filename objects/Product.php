@@ -92,29 +92,91 @@ class Product
 
     //update product
 
-    public function updateProduct()
+    function updateProduct($id, $name = "", $description = "", $model = "", $price = "")
     {
-        $query = "UPDATE $this->table SET Name=:name_IN, Description=:description_IN, Model=:model_IN, Price=:price_IN WHERE ID=:id_IN";
-        $stmt = $this->conn->prepare($query);
+        $error = new stdClass();
 
-        //security functions
-        $this->Name = htmlspecialchars(strip_tags($this->Name));
-        $this->Description = htmlspecialchars(strip_tags($this->Description));
-        $this->Model = htmlspecialchars(strip_tags($this->Model));
-        $this->Price = htmlspecialchars(strip_tags($this->Price));
-        $this->Id = htmlspecialchars(strip_tags($this->Id));
-        //bind data
-        $stmt->bindParam(':name_IN', $this->Name);
-        $stmt->bindParam(':description_IN', $this->Description);
-        $stmt->bindParam(':model_IN',  $this->Model);
-        $stmt->bindParam(':price_IN', $this->Price);
-        $stmt->bindParam(':id_IN', $this->Id);
-        if (!$stmt->execute()) {
-            echo "Product not created";
+        if (!empty($name)) {
+            $error->message = $this->Updatename($id, $name);
         }
-        $stmt->execute();
-        echo "Name: $this->Name Description:$this->Description Model:$this->Model Price:$this->Price";
+        if (!empty($description)) {
+            $error->message = $this->UpdateDescription($id, $description);
+        }
+        if (!empty($model)) {
+            $error->message = $this->UpdateModel($id, $model);
+        }
+        if (!empty($price)) {
+            $error->message = $this->UpdatePrice($id, $price);
+        }
+
+        return $error;
     }
+
+    function Updatename($id, $name)
+    {
+        $sql = "UPDATE $this->table SET Name=:name_IN WHERE id=:user_id_IN";
+        $statement = $this->conn->prepare($sql);
+        $name = htmlspecialchars(strip_tags($name)); //prevents code inject
+        $statement->bindParam(":name_IN", $name);
+        $statement->bindParam(":user_id_IN", $id);
+        $statement->execute();
+
+
+        if ($statement->rowCount() < 1) {
+            return "No product with id=$id was found!";
+        } else {
+            return "Product .$id name changed";
+        }
+    }
+    function UpdateDescription($id, $description)
+    {
+        $sql = "UPDATE $this->table SET Description=:description_IN WHERE id=:user_id_IN";
+        $statement = $this->conn->prepare($sql);
+        $description = htmlspecialchars(strip_tags($description)); //prevents code inject
+        $statement->bindParam(":description_IN", $description);
+        $statement->bindParam(":user_id_IN", $id);
+        $statement->execute();
+
+        if ($statement->rowCount() < 1) {
+            return "No product with id=$id was found!";
+        } else {
+            return "Product .$id description changed";
+        }
+    }
+
+    function UpdateModel($id, $model)
+    {
+        $sql = "UPDATE $this->table SET Model=:model_IN WHERE id=:user_id_IN";
+        $statement = $this->conn->prepare($sql);
+        $model = htmlspecialchars(strip_tags($model)); //prevents code inject
+        $statement->bindParam(":model_IN", $model);
+        $statement->bindParam(":user_id_IN", $id);
+        $statement->execute();
+
+        if ($statement->rowCount() < 1) {
+            return "No product with id=$id was found!";
+        } else {
+            return "Product .$id model changed";
+        }
+    }
+
+    function UpdatePrice($id, $price)
+    {
+        $sql = "UPDATE $this->table SET Price=:price_IN WHERE id=:user_id_IN";
+        $statement = $this->conn->prepare($sql);
+        $price = htmlspecialchars(strip_tags($price));
+        $statement->bindParam(":price_IN", $price);
+        $statement->bindParam(":user_id_IN", $id);
+        $statement->execute();
+
+        if ($statement->rowCount() < 1) {
+            return "No product with id=$id was found!";
+        } else {
+            return "Product .$id price changed";
+        }
+    }
+
+
     //Delete product
     public function deleteProduct()
     {
@@ -136,8 +198,9 @@ class Product
     public function getByCategory()
     {
         //create query
-        $query = "SELECT * FROM $this->table WHERE Model=:model_IN";
+        $query = "SELECT * FROM $this->table WHERE Model LIKE :model_IN";
         $stmt = $this->conn->prepare($query);
+        $this->Model = "%$this->Model%";
         $stmt->bindParam(':model_IN', $this->Model);
         if (!($stmt->execute()) || $stmt->rowCount() < 1) {
             $error = new stdClass();
