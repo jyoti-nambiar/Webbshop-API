@@ -25,7 +25,7 @@ Fork the project from the Github , use [GitHub](https://github.com/jyoti-nambiar
 
 
 ## Structure(Endpoints)
-# User endpoints
+### User endpoints
 1. https://localhost/WebbshopAPI/v1/user/registerUser.php?username=&email=password=
    User registration(provide values after the '=' symbol, _For eg._ _username=user&email=user@gmail.com&password=user_).
 
@@ -35,7 +35,7 @@ Fork the project from the Github , use [GitHub](https://github.com/jyoti-nambiar
 3. https://localhost/WebbshopAPI/v1/user/getAllUsers.php
     Shows all the resitered users.
 
-# Product endpoints
+### Product endpoints
 4. https://localhost/WebbshopAPI/v1/product/createProduct.php?name=&description&model=&price=
 Create a new Product(_provide values after the '=' symbol_).
 
@@ -54,7 +54,7 @@ Get products belong to specific category(brand) _for eg_. category=samsung
 9. https://localhost/WebbshopAPI/v1/product/getSingleProduct.php?id=
 Get a specific product by entering product id _for eg._ id=3
 
-# Cart endpoints
+### Cart endpoints
 10. https://localhost/WebbshopAPI/v1/cart/addToCart.php?productid=&quantity=
 Add items to cart,by providing product-Id and quantity(_provide values after the '=' symbol_).
 
