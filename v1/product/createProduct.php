@@ -48,4 +48,5 @@ if (!empty($_GET['price'])) {
     die();
 }
 
+//create new product
 $product->createProduct();

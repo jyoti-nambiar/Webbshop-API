@@ -58,7 +58,7 @@ class Cart
                 $stmt->bindParam(':id_IN', $this->Id);
                 $stmt->execute();
                 echo "Product Id.$this->ProductId already in cart, quantity updated";
-            } else {
+            } else { //add item to cart
                 $query = "Insert INTO $this->table SET OrderId=:orderid_IN,  ProductId=:productid_IN, Quantity=:quantity_IN, UserId=:userid_IN";
                 $stmt = $this->conn->prepare($query);
 
@@ -93,7 +93,7 @@ class Cart
             die();
         } else {
             while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                //print_r($data);
+
                 echo "<table>";
                 echo "<tr><td>Order ID:</td><td>$data[OrderId]</td></tr>";
                 echo "<tr><td>Product:</td><td>$data[Name]</td></tr>";
@@ -119,13 +119,14 @@ class Cart
             echo "product deleted from cart";
         } else { //if the order ID or product ID does not exist
             $error = new stdClass();
-            $error->message = "No product or order Id exist";
+            $error->message = "No such product or order Id exist";
             $error->code = "0003";
             print_r(json_encode($error));
             die();
         }
     }
 
+    //Checkout order
     function checkoutOrder()
     {
         $query = "SELECT po.OrderId, u.Username, SUM(po.Quantity) AS Quantity, SUM(p.Price) AS TotalPrice FROM pendingOrders AS po JOIN products AS p ON po.ProductId = p.Id JOIN users AS u ON po.UserId = u.Id WHERE po.OrderId=:orderid_IN";
@@ -144,7 +145,7 @@ class Cart
             $count = $row['Quantity'];
             $total = $row['TotalPrice'];
             if (!empty($row['OrderId'])) {
-                //echo $row['OrderId'];
+
                 $this->OrderId = $row['OrderId'];
             } else {
                 $error = new stdClass();
@@ -153,6 +154,7 @@ class Cart
                 print_r(json_encode($error));
                 die();
             }
+            //if order exist , inserted into a new table checkoutorder in db
             $query = "INSERT INTO checkoutorders SET OrderId=:orderid_IN, Username=:username_IN, NumberOfProducts=:numofproducts_IN, TotalAmount=:total_IN";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':orderid_IN', $this->OrderId);
@@ -165,18 +167,19 @@ class Cart
                 $error->code = "0012";
                 print_r(json_encode($error));
                 die();
-            } else {
+            } else { //when order is checked out it is deleted from the pendingorders table in db
                 $query = "DELETE FROM $this->table WHERE OrderId=:orderid_IN";
                 $stmt = $this->conn->prepare($query);
                 $stmt->bindParam(':orderid_IN', $this->OrderId);
                 $stmt->execute();
+                //session token row deleted to avoid generating order with same orderid again
                 $sql = "DELETE FROM sessions WHERE Token =:token_IN";
                 $stm = $this->conn->prepare($sql);
                 $stm->bindParam(':token_IN', $this->OrderId);
                 $stm->execute();
             }
         }
-
+        //Display the details of checked out order
         echo "Order No.$this->OrderId. is successfully checked out";
         echo "</br>";
         echo "<h3>Order Details</h3>";

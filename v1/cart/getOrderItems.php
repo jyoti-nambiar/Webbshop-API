@@ -19,4 +19,5 @@ if (!empty($_GET['orderid'])) {
     print_r(json_encode($error));
     die();
 }
+//get all items against and orderid
 $cart->getOrderItems();

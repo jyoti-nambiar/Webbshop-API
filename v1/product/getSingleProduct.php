@@ -13,6 +13,7 @@ $product = new Product($db);
 
 if (isset($_GET['id'])) {
     $product->Id = $_GET['id'];
+    //get a specific product
     $product->singleProduct();
     $product_array = array(
         'Id' => $product->Id,

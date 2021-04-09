@@ -26,4 +26,5 @@ if (!empty($_GET['orderid'])) {
     print_r(json_encode($error));
     die();
 }
+//delete cart item
 $cart->deleteCartItem();

@@ -11,6 +11,9 @@ $product = new Product($db);
 
 if (isset($_GET['category'])) {
     $product->Model = $_GET['category'];
+
+
+    //list products under category
     $result = $product->getByCategory();
     $num = $result->rowCount();
     $product_array = array();

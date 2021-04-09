@@ -55,11 +55,11 @@ if ($stmt->execute()) {
     }
 
 
-
+    //check token's validity
     if ($user->isTokenValid($cart->OrderId)) {
 
         $cart->addProductInCart();
-    } else {
+    } else { //session logged out after 60 mins , so login to create new token
         $error = new stdClass();
         $error->message = "Session logged out, please login again";
         $error->code = "0010";

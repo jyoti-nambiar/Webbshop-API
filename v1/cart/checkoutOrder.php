@@ -19,5 +19,5 @@ if (!empty($_GET['orderid'])) {
     print_r(json_encode($error));
     die();
 }
-
+//checkout order
 $cart->checkoutOrder();

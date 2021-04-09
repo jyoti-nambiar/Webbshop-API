@@ -41,6 +41,8 @@ if (isset($_GET['price'])) {
 }
 
 $product = new Product($db);
+
+//update a product either one or all its parameters
 echo json_encode($product->UpdateProduct($id, $name, $description, $model, $price));
 
 

@@ -1,5 +1,5 @@
 # Mobile Shoppy
-Mobile Shoppy is an API project for e-commerce website.The project uses various endpoints to execute all the fuctionalities which one can find in a e-commerce website.
+Mobile Shoppy is an API project for e-commerce website.The webshop products are  mobile of various brands(category).The project uses various endpoints to execute all the fuctionalities which one can find in a e-commerce website.
 
 ## Feautures of Project
 1. Register a new user by providing credentials like username, email & password.

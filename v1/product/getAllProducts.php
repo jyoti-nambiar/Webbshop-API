@@ -10,6 +10,7 @@ $db = $database->connect();
 
 //call product object
 $product = new Product($db);
+//get all products in the webshop
 $result = $product->getProducts();
 $num = $result->rowCount();
 $product_array = array();

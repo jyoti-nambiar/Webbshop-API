@@ -15,7 +15,7 @@ class User
     {
         $this->conn = $db;
     }
-
+    //register new user
     public function createUser()
     {
         $query = "SELECT * FROM $this->table WHERE Username=:username_IN OR Email=:email_IN";
@@ -84,13 +84,14 @@ class User
     {
         $this->Id = $id;
         $this->Username = $username;
+
         $checkToken = $this->checkToken($this->Id);
 
         if ($checkToken != false) {
 
             return $checkToken;
         }
-
+        //generate  new token
         $token = md5(time() . $this->Id . $this->Username);
         $query = "INSERT INTO sessions (User_Id, Token, Last_used) VALUES (:userid_IN, :token_IN, :lastused_IN)";
         $stmt = $this->conn->prepare($query);
@@ -104,7 +105,7 @@ class User
     }
 
 
-
+    //check token's validity
     function checkToken($id)
     {
         $query = "SELECT Token, Last_used FROM sessions WHERE User_Id=:userid_IN AND Last_Used > :activeTime_IN LIMIT 1";
@@ -124,6 +125,7 @@ class User
         }
     }
 
+    //to check if the logged in token is valid
     function isTokenValid($token)
     {
         $query = "SELECT Token, Last_used FROM sessions WHERE Token=:token_IN AND Last_used > :activeTime_IN LIMIT 1";
@@ -142,6 +144,7 @@ class User
             return false;
         }
     }
+    //if token is valid, update the token's last used
     function UpdateToken($token)
     {
         $sql = "UPDATE sessions SET Last_used=:last_used_IN WHERE Token=:token_IN";

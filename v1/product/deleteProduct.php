@@ -18,5 +18,5 @@ if (!empty($_GET['id'])) {
     print_r(json_encode($error));
     die();
 }
-
+//delete an existing product with product id
 $product->deleteProduct();
