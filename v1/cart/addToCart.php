@@ -31,6 +31,7 @@ if (!empty($_GET['quantity'])) {
 $user = new User($db);
 
 $query = "SELECT User_Id, Token FROM sessions WHERE Id=(SELECT MAX(id) FROM sessions)";
+
 $stmt = $db->prepare($query);
 if (!$stmt->execute()) {
     echo "Please login first";
@@ -41,9 +42,18 @@ if ($stmt->execute()) {
 
 
     //getting orderId and UserId from sessions table
-    $cart->OrderId = $row['Token'];
+    if (!empty($row)) {
+        $cart->OrderId = $row['Token'];
 
-    $cart->UserId = $row['User_Id'];
+        $cart->UserId = $row['User_Id'];
+    } else {
+        $error = new stdClass();
+        $error->message = "Please login to add items to cart";
+        $error->code = "0013";
+        print_r(json_encode($error));
+        die();
+    }
+
 
 
     if ($user->isTokenValid($cart->OrderId)) {
